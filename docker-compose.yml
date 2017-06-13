@@ -1,0 +1,74 @@
+version: '3'
+
+services:
+  lb:
+    build:
+      context: ./lb
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
+    container_name: lb-xyz-inc
+
+  api:
+    build:
+      context: ./service
+    volumes:
+      - ./service:/app
+    labels:
+      api_zy_inc: "true"
+    environment:
+      - PORT=3000
+    ports:
+      - 3000
+    # depends_on:
+    #   - mongo3
+    #   - mongo2
+    #   - mongo1
+    #   - mongosetup
+
+  # mongo3:
+  #   image: mongo:3.0
+  #   hostname: mongo3
+  #   expose:
+  #     - "27017"
+  #     - "28017"
+  #   volumes:
+  #     - ./mongo_data/replica3:/data/db
+  #   restart: always
+  #   entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--rest", "--httpinterface" ]
+
+  # mongo2:
+  #   image: mongo:3.0
+  #   hostname: mongo2
+  #   expose:
+  #     - "27017"
+  #     - "28017"
+  #   volumes:
+  #     - ./mongo_data/replica2:/data/db
+  #   restart: always
+  #   entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--rest", "--httpinterface" ]
+
+  # mongo1:
+  #   image: mongo:3.0
+  #   hostname: mongo1
+  #   expose:
+  #     - "27017"
+  #     - "28017"
+  #   volumes:
+  #       - ./mongo_data/replica1:/data/db
+  #   links:
+  #     - mongo2:mongo2
+  #     - mongo3:mongo3
+  #   restart: always
+  #   entrypoint: [ "/usr/bin/mongod", "--replSet", "rs", "--rest", "--httpinterface" ]
+
+  # mongosetup:
+  #   image: mongo:3.0
+  #   links:
+  #     - mongo1:mongo1
+  #     - mongo2:mongo2
+  #     - mongo3:mongo3
+  #   volumes:
+  #     - ./mongo_cluster/scripts:/scripts
+  #   entrypoint: [ "bash", "/scripts/mongosetup.sh" ]
